@@ -47,6 +47,36 @@
       height: auto;
     }
 
+    /* いいねエリア */
+    .like-area {
+      padding: 40px 20px 20px;
+    }
+
+    #likeButton {
+      background: white;
+      color: #222;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #likeButton:hover {
+      background: #eee;
+    }
+
+    #likeButton:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    #likeCount {
+      margin-top: 12px;
+      font-size: 16px;
+      color: #ccc;
+    }
+
     footer {
       padding: 40px 20px;
       font-size: 14px;
@@ -78,9 +108,177 @@
 
   </main>
 
+
+  <!-- いいね -->
+  <section class="like-area">
+
+    <button id="likeButton" type="button">
+      ❤️ いいね
+    </button>
+
+    <div id="likeCount">
+      読み込み中...
+    </div>
+
+  </section>
+
+
   <footer>
     © DUNKMAN
   </footer>
+
+
+  <!-- Supabase -->
+  <script type="module">
+
+    import { createClient } from
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+
+    // =====================================
+    // Supabase設定
+    // =====================================
+
+    const SUPABASE_URL =
+      "https://nkkylngaimcljrczyyml.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_u8CGY8sRyW0v2-Fs7YTIzQ_U8WFh1ZB";
+
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    // =====================================
+    // 第3話
+    // =====================================
+
+    const episode = "episode3";
+
+    const likeButton =
+      document.getElementById("likeButton");
+
+    const likeCount =
+      document.getElementById("likeCount");
+
+    const storageKey =
+      "dunkman_liked_episode3";
+
+
+    // =====================================
+    // 現在のいいね数を取得
+    // =====================================
+
+    async function loadLikes() {
+
+      const { data, error } = await supabase
+        .from("episode_likes")
+        .select("likes")
+        .eq("episode", episode)
+        .single();
+
+
+      if (error) {
+
+        console.error(error);
+
+        likeCount.textContent =
+          "いいね数を読み込めませんでした";
+
+        return;
+      }
+
+
+      likeCount.textContent =
+        `❤️ ${data.likes} いいね`;
+
+
+      // 以前このブラウザで
+      // いいねしていたか確認
+      if (localStorage.getItem(storageKey)) {
+
+        likeButton.disabled = true;
+
+        likeButton.textContent =
+          "❤️ いいね済み";
+
+      }
+
+    }
+
+
+    // =====================================
+    // いいねボタン
+    // =====================================
+
+    likeButton.addEventListener(
+      "click",
+      async () => {
+
+        // 二重クリック防止
+        likeButton.disabled = true;
+
+        likeButton.textContent =
+          "送信中...";
+
+
+        const { data, error } =
+          await supabase.rpc(
+            "increment_episode_like",
+            {
+              p_episode: episode
+            }
+          );
+
+
+        // エラーの場合
+        if (error) {
+
+          console.error(error);
+
+          likeButton.disabled = false;
+
+          likeButton.textContent =
+            "❤️ いいね";
+
+          alert(
+            "いいねを送信できませんでした。"
+          );
+
+          return;
+        }
+
+
+        // 新しいいいね数を表示
+        likeCount.textContent =
+          `❤️ ${data} いいね`;
+
+
+        // このブラウザでは
+        // いいね済みとして保存
+        localStorage.setItem(
+          storageKey,
+          "1"
+        );
+
+
+        likeButton.textContent =
+          "❤️ いいね済み";
+
+      }
+    );
+
+
+    // =====================================
+    // ページを開いたとき
+    // =====================================
+
+    loadLikes();
+
+  </script>
 
 </body>
 
