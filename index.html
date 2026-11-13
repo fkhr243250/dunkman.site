@@ -84,7 +84,7 @@
       background: #444;
     }
 
-    /* OFUSE支援 */
+    /* OFUSE支援ボタン */
     .support {
       text-align: center;
       margin: 50px 20px 20px;
@@ -95,6 +95,24 @@
       font-size: 14px;
       margin-bottom: 18px;
       letter-spacing: 1px;
+    }
+
+    .ofuse-button {
+      display: inline-block;
+      background: #e98b45;
+      color: white;
+      text-decoration: none;
+      padding: 15px 40px;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: 0.2s;
+    }
+
+    .ofuse-button:hover {
+      background: #f3a568;
+      transform: translateY(-2px);
     }
 
     /* フッター */
@@ -202,16 +220,13 @@
     </div>
 
     <a
-      data-ofuse-widget-button
+      class="ofuse-button"
       href="https://ofuse.me/o?uid=219712"
-      data-ofuse-id="219712"
-    >OFUSEで応援を送る</a>
-
-    <script
-      async
-      src="https://ofuse.me/assets/platform/widget.js"
-      charset="utf-8">
-    </script>
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      ☕ OFUSEで支援する
+    </a>
 
   </div>
 
